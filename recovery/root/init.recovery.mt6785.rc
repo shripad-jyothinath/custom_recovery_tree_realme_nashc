@@ -4,6 +4,7 @@ import /init.recovery.trustonic.rc
 
 on init
     symlink /dev/block/platform/bootdevice /dev/block/bootdevice
+    symlink /mnt/vendor/persist /persist
     export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw
     setprop ro.boot.build.security_patch 2099-12-31
 
