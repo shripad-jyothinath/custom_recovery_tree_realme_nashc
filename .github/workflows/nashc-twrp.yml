@@ -1,6 +1,7 @@
 name: TWRP
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - 'android-12.1'
@@ -11,7 +12,6 @@ jobs:
   build:
     name: Build TWRP by ${{ github.actor }}
     runs-on: ubuntu-20.04
-    if: github.event.repository.owner.id == github.event.sender.id
     permissions:
       contents: write
     steps:
@@ -30,7 +30,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get -y upgrade
-        sudo apt-get -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libncurses5 libtinfo5 libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev python
+        sudo apt-get -y install gperf gcc-multilib gcc-10-multilib g++-multilib g++-10-multilib libc6-dev lib32ncurses5-dev x11proto-core-dev libx11-dev tree lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc bc ccache lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev libncurses5 libtinfo5 libsdl1.2-dev libwxgtk3.0-gtk3-dev libxml2 lzop pngcrush schedtool squashfs-tools imagemagick libbz2-dev lzma ncftp qemu-user-static libstdc++-10-dev python-is-python3
 
     - name: Install OpenJDK
       uses: actions/setup-java@v3
@@ -40,17 +40,17 @@ jobs:
 
     - name: Install Git-Repo
       run: |
-        mkdir ~/bin
+        mkdir -p ~/bin
         curl https://storage.googleapis.com/git-repo-downloads/repo > ~/bin/repo
         chmod a+x ~/bin/repo
         sudo ln -sf ~/bin/repo /usr/bin/repo
 
     - name: Initialize Repo
       run: |
-        mkdir twrp
+        mkdir -p twrp
         cd twrp
-        git config --global user.name "Carlo Dee"
-        git config --global user.email "carlodee.official@proton.me"
+        git config --global user.name "${{ github.actor }}"
+        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
         repo init --depth=1 -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1
 
     - name: Repo Sync
@@ -61,7 +61,7 @@ jobs:
     - name: Clone Device Tree
       run: |
         cd twrp
-        git clone https://github.com/cd-Crypton/custom_recovery_tree_realme_nashc.git -b android-12.1 ./device/realme/nashc
+        git clone https://github.com/${{ github.repository }}.git -b android-12.1 ./device/realme/nashc
         cd device/realme/nashc
         echo "COMMIT_ID=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
@@ -80,14 +80,10 @@ jobs:
         echo "BUILD_DATE=$(date +%Y%m%d)" >> $GITHUB_ENV
         echo -e \
         "
-        ## Test Build for Realme 8 (nashc)
-        _Note: Flash at your own risk. This build were still in the process of testing._
-        ### Resources
-        * [TWRP Manifest](https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp/tree/twrp-12.1)
-        * [Device Tree](https://github.com/cd-Crypton/custom_recovery_tree_realme_nashc.git/tree/android-12.1)
-        ### Trigger Event
-        _This build were compiled by triggering branch android-12.1 of current tree, triggered by a push event._
-        * [Last Commit](https://github.com/cd-Crypton/custom_recovery_tree_realme_nashc.git/commit/${{ env.COMMIT_ID }})
+        ## Test Build for Realme 8 (nashc) with Decryption Fixes
+        * Fixed Trustonic TEE & Keymaster HAL in VINTF manifest
+        * Fixed /mnt/vendor/persist mount
+        * Added FBE v2 policy
         " > changelog.txt
 
     - name: Upload to Release
