@@ -3,4 +3,4 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 
-TW_DEVICE_VERSION := 12.1-nashc-shripad
+TW_DEVICE_VERSION := 12.1-nashc
