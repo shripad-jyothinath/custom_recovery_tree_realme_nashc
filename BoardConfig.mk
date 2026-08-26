@@ -95,6 +95,7 @@ PLATFORM_VERSION_LAST_STABLE := $(PLATFORM_VERSION)
 TW_INCLUDE_CRYPTO := true
 TW_INCLUDE_CRYPTO_FBE := true
 TW_INCLUDE_FBE_METADATA_DECRYPT := true
+TW_USE_FSCRYPT_POLICY := 2
 TW_PREPARE_DATA_MEDIA_EARLY := true
 
 # AVB
@@ -144,7 +145,7 @@ TW_EXCLUDE_APEX := true
 TW_OVERRIDE_SYSTEM_PROPS := "ro.build.version.sdk"
 
 # Version/Maintainer
-include $(DEVICE_PATH)/version.mk
+-include $(DEVICE_PATH)/version.mk
 
 # Debugging Configs
 TWRP_INCLUDE_LOGCAT := true
